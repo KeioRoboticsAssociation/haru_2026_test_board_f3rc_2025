@@ -1,0 +1,20 @@
+{
+  "devices": [
+    {
+      "device_id": 0,
+      "reception_messages": [
+        {
+          "id": 1,
+          "name": "encoder_counts",
+          "type": "(c_int64, c_int64, c_int64)"
+        },
+        {
+          "id": 2,
+          "name": "limit_switches",
+          "type": "c_uint8"
+        }
+      ],
+      "transmission_messages": []
+    }
+  ]
+}
