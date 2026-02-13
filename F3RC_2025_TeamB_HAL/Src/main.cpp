@@ -24,12 +24,15 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 // エラーコールバックの処理
+static uint32_t uart_error_count = 0;
 void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart) {
     if (huart->Instance == USART2) {
         // エラーフラグをクリア（HALが自動でやるが念のため）
+        uart_error_count++;
         __HAL_UART_CLEAR_OREFLAG(huart);
         __HAL_UART_CLEAR_FEFLAG(huart);
         __HAL_UART_CLEAR_NEFLAG(huart);
+        __HAL_UART_CLEAR_PEFLAG(huart);
         
         // 受信を再開（バッファインデックスもリセットされる）
         uart_link.start();
