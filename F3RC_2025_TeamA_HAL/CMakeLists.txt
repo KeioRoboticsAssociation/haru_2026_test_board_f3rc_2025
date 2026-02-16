@@ -11,6 +11,9 @@ cmake_minimum_required(VERSION 3.22)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 
 # Define the build type
@@ -29,7 +32,7 @@ project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
 # Enable CMake support for ASM and C languages
-enable_language(C ASM)
+enable_language(C CXX ASM)
 
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
@@ -43,13 +46,32 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 # Add sources to executable
+file(GLOB_RECURSE USER_SOURCES Src/*.c Src/*.cpp)
+
+# Enabled libraries under Lib/ (semicolon-separated), or "ALL" for everything.
+set(F446_LIBS "ALL" CACHE STRING "Lib modules under Lib/ to build (semicolon-separated), or ALL")
+set(USER_LIB_SOURCES "")
+if(F446_LIBS STREQUAL "ALL")
+    file(GLOB_RECURSE USER_LIB_SOURCES CONFIGURE_DEPENDS Lib/*/Src/*.c Lib/*/Src/*.cpp)
+else()
+    foreach(lib ${F446_LIBS})
+        file(GLOB_RECURSE ONE_LIB_SOURCES CONFIGURE_DEPENDS "Lib/${lib}/Src/*.c" "Lib/${lib}/Src/*.cpp")
+        list(APPEND USER_LIB_SOURCES ${ONE_LIB_SOURCES})
+    endforeach()
+endif()
+
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user sources here
+    ${USER_SOURCES}
+    ${USER_LIB_SOURCES}
 )
 
 # Add include paths
+file(GLOB USER_LIB_DIRS Lib/*/Inc)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     # Add user defined include paths
+    Inc
+    ${USER_LIB_DIRS}
 )
 
 # Add project symbols (macros)
