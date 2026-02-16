@@ -9,6 +9,7 @@ UartLink::UartLink(UART_HandleTypeDef* huart, uint8_t device_id): CobsEncodedCom
 
 void UartLink::start()
 {
+    receive_buffer_index = 0;
     HAL_UART_Receive_IT(huart_ptr, &receive_buffer[0], 1);
 }
 
@@ -27,6 +28,7 @@ void UartLink::interrupt()
     if (receive_buffer_index >= BUFFER_SIZE - 6) {
         // バッファがオーバーフローしたらリセット
         receive_buffer_index = 0;
+        HAL_UART_Receive_IT(huart_ptr, &receive_buffer[0], 1);
         return;
     }
 
